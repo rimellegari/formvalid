@@ -60,6 +60,11 @@ const msgErro = {
         customError:'Você deve ter 18 anos ou mais para se cadastrar.'
     },
 
+    cpf: {
+        valueMissing: 'O campo senha não pode estar vazio',
+        customError:'O CPF digitado não é valido'
+    },
+
     cep: {
         valueMissing: 'O campo de CPF não pode estar vazio',
         patternMismatch: 'O CPF digitado não é válido',
@@ -76,7 +81,11 @@ const msgErro = {
 
     estado: {
         valueMissing: 'O campo de estado não pode estar vazio'
+    },
+    preco: {
+        valueMissing: 'O campo de preço não pode estar vazio'
     }
+
 
     
 }
@@ -122,6 +131,78 @@ function MaiordeIdade(data)  {
 
 }
 
+//cpf
+
+function validaCPF(input) {
+    const cpfformatado = input.value.replace(/\D/g,'')
+    let mensagem ='';
+
+    if(!onzeDigCPF(cpfformatado) || !checaEstuturaCPF(cpfformatado)) {
+        mensagem = 'O CPF digitado não é valido'
+    }
+
+    input.setCustomValidity(mensagem)
+}
+
+function onzeDigCPF(cpf) {
+    const valoresRepetidos = [
+        '00000000000',
+        '11111111111',
+        '22222222222',
+        '33333333333',
+        '44444444444',
+        '55555555555',
+        '66666666666',
+        '77777777777',
+        '88888888888',
+        '99999999999'
+    ]
+
+    let cpfValido = true
+
+    valoresRepetidos.forEach(valor => {
+        if(valor ==cpf) {
+            cpfValido = false
+        }
+
+    })
+        return cpfValido
+    
+}
+
+//Validação todos os numeros CPF
+
+function checaEstuturaCPF(cpf) {
+    const multiplicador = 10
+
+    return checaDigitoVerificador(cpf, multiplicador) 
+    
+}
+
+function checaDigitoVerificador(cpf, multiplicador) {
+    if(multiplicador>=12) {
+        return true
+    }
+
+//constante para armazenar soma dos 9 primeiros digitos - função substring para cortar o cpf
+    let multiplicadorInicial = multiplicador
+    let soma = 0
+    const cpfSemDigitos = cpf.substr(0,multiplicador-1).split('')
+    const digitoVerificador = cpf.charAt(multiplicador-1)
+    for(let contador = 0; multiplicadorInicial >1; multiplicadorInicial--) {
+        soma = soma +cpfSemDigitos[contador]*multiplicadorInicial
+        contador++
+    }
+    if(digitoVerificador ==confirmaDigito(soma)) {
+        return checaDigitoVerificador(cpf, multiplicador+1)
+    }
+    return false
+}
+function confirmaDigito(soma) {
+    return 11 - (soma % 11)
+}
+
+//CEP
 function recuperarCEP(input) {
 const cep = input.value.replace(/\D/g,'')
 //criando url cep
